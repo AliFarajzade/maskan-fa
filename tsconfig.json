@@ -6,6 +6,9 @@
       "dom.iterable",
       "esnext"
     ],
+    "typeRoots": [
+      "./custom.d.ts"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -22,6 +25,7 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "src"
+    "src/**/*",
+    "./custom.d.ts"
   ]
 }
