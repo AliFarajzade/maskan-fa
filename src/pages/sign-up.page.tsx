@@ -1,9 +1,13 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
+
+import { signUpUserWithEmailandPassword } from '../firebase/firebase'
 
 import { ReactComponent as ArrowRightIcon } from '../assets/svg/keyboardArrowRightIcon.svg'
 import visibilityIcon from '../assets/svg/visibilityIcon.svg'
+
+import Loader from '../components/loader.component'
 
 type TInputs = {
     name: string
@@ -12,7 +16,10 @@ type TInputs = {
 }
 
 const SignInPage = () => {
+    const navigate = useNavigate()
+
     const [passwordVisibility, setPasswordVisibility] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const {
         register,
         handleSubmit,
@@ -20,7 +27,13 @@ const SignInPage = () => {
         formState: { errors },
     } = useForm<TInputs>()
 
-    const onSubmit: SubmitHandler<TInputs> = data => console.log(data)
+    const onSubmit: SubmitHandler<TInputs> = async data => {
+        setIsLoading(true)
+        const { email, password, name } = data
+        await signUpUserWithEmailandPassword(email, password, name)
+        setIsLoading(false)
+        navigate('/profile')
+    }
 
     return (
         <>
@@ -39,7 +52,7 @@ const SignInPage = () => {
                             required: true,
                         })}
                     />
-                    {errors.email && (
+                    {errors.name && (
                         <span className="field-error">
                             نام نمیتواند خالی باشد.
                         </span>
@@ -129,6 +142,7 @@ const SignInPage = () => {
                     وارد حساب کاربری خود شوید.
                 </Link>
             </div>
+            <Loader loadingState={isLoading} />
         </>
     )
 }
