@@ -5,7 +5,6 @@ type IProps = {
 }
 
 const Loader: React.FC<IProps> = ({ loadingState }) => {
-    console.log(loadingState)
     return loadingState ? (
         <div className="loader-container">
             <Spinner />

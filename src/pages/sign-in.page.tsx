@@ -1,6 +1,9 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
+import { toast } from 'react-toastify'
+
+import { signInUserWithEmailandPassword } from '../firebase/firebase'
 
 import { ReactComponent as ArrowRightIcon } from '../assets/svg/keyboardArrowRightIcon.svg'
 import visibilityIcon from '../assets/svg/visibilityIcon.svg'
@@ -11,6 +14,8 @@ type TInputs = {
 }
 
 const SignInPage = () => {
+    const navigate = useNavigate()
+
     const [passwordVisibility, setPasswordVisibility] = useState<boolean>(false)
     const {
         register,
@@ -19,7 +24,33 @@ const SignInPage = () => {
         formState: { errors },
     } = useForm<TInputs>()
 
-    const onSubmit: SubmitHandler<TInputs> = data => console.log(data)
+    const onSubmit: SubmitHandler<TInputs> = async data => {
+        const { email, password } = data
+
+        const requestStatus = await signInUserWithEmailandPassword(
+            email,
+            password
+        )
+        switch (requestStatus) {
+            case 'auth/user-not-found':
+                toast.error('کاربر یافت نشد.')
+                break
+
+            case 'auth/wrong-password':
+                toast.error('ایمیل یا رمز عبور اشتباه است.')
+                break
+            case 'auth/network-request-failed':
+                toast.error('خطا در ارسال اطلاعات. اینترنت خود را چک کنید.')
+                break
+            case 'auth/too-many-requests':
+                toast.error('درخواست بیش از حد. کمی بعد تلاش کنید.')
+                break
+
+            default:
+                toast.success('ورود با موفقیت انجام شد.')
+                navigate('/profile')
+        }
+    }
 
     return (
         <>

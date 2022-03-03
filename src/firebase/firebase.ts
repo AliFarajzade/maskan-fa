@@ -1,10 +1,12 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app'
 import {
     getAuth,
     createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
     updateProfile,
 } from 'firebase/auth'
+
+import { doc, setDoc, serverTimestamp, getFirestore } from 'firebase/firestore'
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -19,7 +21,9 @@ const firebaseConfig = {
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig)
 
-const auth = getAuth()
+export const auth = getAuth()
+
+const firestore = getFirestore()
 
 // Sign up with email and password
 export const signUpUserWithEmailandPassword = async (
@@ -28,15 +32,47 @@ export const signUpUserWithEmailandPassword = async (
     displayName: string
 ) => {
     try {
-        const userCredential = await createUserWithEmailAndPassword(
+        const { user } = await createUserWithEmailAndPassword(
             auth,
             email,
             password
         )
-        const userData = userCredential.user
 
-        updateProfile(auth.currentUser!, { displayName })
-    } catch (error) {
-        console.log(error)
+        await updateProfile(user, { displayName })
+
+        console.log('firebase userData:', user)
+
+        return {
+            displayName: user.displayName,
+            email: user.email,
+            uid: user.uid,
+            timestamp: serverTimestamp(),
+        }
+    } catch (error: any) {
+        console.log(error.code)
+        return error.code
     }
+}
+
+export const signInUserWithEmailandPassword = async (
+    email: string,
+    password: string
+) => {
+    try {
+        await signInWithEmailAndPassword(auth, email, password)
+
+        return true
+    } catch (error: any) {
+        console.log(error.code)
+        return error.code
+    }
+}
+
+// Setting document on given collection name
+export const setDocOnFirestore = async (
+    dataToSet: any,
+    collectionName: string,
+    pathSegment: string
+) => {
+    await setDoc(doc(firestore, collectionName, pathSegment), dataToSet)
 }

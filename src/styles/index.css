@@ -10,6 +10,7 @@
     -moz-font-feature-settings: 'ss02';
     -webkit-font-feature-settings: 'ss02';
     font-feature-settings: 'ss02';
+    font-family: IRANSansX !important;
 }
 
 html::-webkit-scrollbar {
@@ -865,13 +866,17 @@ button {
 
 .loader-container {
     position: fixed;
-    inset: 0;
-    background-color: rgba(255, 255, 255, 0.5);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.6);
+    z-index: 10000000;
 }
 
 .loader-container > * {
     position: absolute;
-    top: 45%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 }

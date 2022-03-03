@@ -1,8 +1,12 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
+import { toast } from 'react-toastify'
 
-import { signUpUserWithEmailandPassword } from '../firebase/firebase'
+import {
+    signUpUserWithEmailandPassword,
+    setDocOnFirestore,
+} from '../firebase/firebase'
 
 import { ReactComponent as ArrowRightIcon } from '../assets/svg/keyboardArrowRightIcon.svg'
 import visibilityIcon from '../assets/svg/visibilityIcon.svg'
@@ -29,10 +33,41 @@ const SignInPage = () => {
 
     const onSubmit: SubmitHandler<TInputs> = async data => {
         setIsLoading(true)
+        // Get form data
         const { email, password, name } = data
-        await signUpUserWithEmailandPassword(email, password, name)
+
+        // Sign up user auth
+        const signUpServerResponse = await signUpUserWithEmailandPassword(
+            email,
+            password,
+            name
+        )
+
+        console.log('userData:', signUpServerResponse)
+
         setIsLoading(false)
-        navigate('/profile')
+        // If sign up failed
+        switch (signUpServerResponse) {
+            case 'auth/network-request-failed':
+                toast.error('خطا در ارسال اطلاعات. اینترنت خود را چک کنید.')
+                break
+            case 'auth/too-many-requests':
+                toast.error('درخواست بیش از حد. کمی بعد تلاش کنید.')
+                break
+
+            default:
+                navigate('/profile')
+
+                await setDocOnFirestore(
+                    signUpServerResponse,
+                    'users',
+                    signUpServerResponse!.uid
+                )
+                toast.success('ثبت نام با موفقیت انجام شد.')
+                break
+        }
+
+        // Redirect to profile page if succesful
     }
 
     return (
