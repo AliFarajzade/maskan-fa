@@ -7,6 +7,7 @@ import { signInUserWithEmailandPassword } from '../firebase/firebase'
 
 import { ReactComponent as ArrowRightIcon } from '../assets/svg/keyboardArrowRightIcon.svg'
 import visibilityIcon from '../assets/svg/visibilityIcon.svg'
+import Loader from '../components/loader.component'
 
 type TInputs = {
     email: string
@@ -16,6 +17,7 @@ type TInputs = {
 const SignInPage = () => {
     const navigate = useNavigate()
 
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const [passwordVisibility, setPasswordVisibility] = useState<boolean>(false)
     const {
         register,
@@ -25,6 +27,7 @@ const SignInPage = () => {
     } = useForm<TInputs>()
 
     const onSubmit: SubmitHandler<TInputs> = async data => {
+        setIsLoading(true)
         const { email, password } = data
 
         const requestStatus = await signInUserWithEmailandPassword(
@@ -50,6 +53,7 @@ const SignInPage = () => {
                 toast.success('ورود با موفقیت انجام شد.')
                 navigate('/profile')
         }
+        setIsLoading(false)
     }
 
     return (
@@ -126,6 +130,7 @@ const SignInPage = () => {
                     ثبت نام
                 </Link>
             </div>
+            <Loader loadingState={isLoading} />
         </>
     )
 }
