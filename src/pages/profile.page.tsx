@@ -26,8 +26,19 @@ const ProfilePage = () => {
         return () => unSubscribeGoogleAuthObserver()
     }, [navigate])
 
+    const signOut = () => {
+        auth.signOut()
+    }
+
     return userCredentials ? (
-        <h1>{userCredentials.displayName}</h1>
+        <div className="profile">
+            <header className="profileHeader">
+                <p className="pageHeader">حساب کاربری</p>
+                <button onClick={signOut} className="logOut">
+                    خروج
+                </button>
+            </header>
+        </div>
     ) : (
         <Loader loadingState={true} />
     )

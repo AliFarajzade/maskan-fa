@@ -655,7 +655,7 @@ button {
     font-size: 1rem;
     font-weight: 600;
     color: #ffffff;
-    background-color: #00cc66;
+    background-color: red;
     padding: 0.25rem 0.75rem;
     border-radius: 1rem;
 }
