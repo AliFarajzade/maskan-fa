@@ -43,8 +43,6 @@ const SignInPage = () => {
             name
         )
 
-        console.log('userData:', signUpServerResponse)
-
         setIsLoading(false)
         // If sign up failed
         switch (signUpServerResponse) {

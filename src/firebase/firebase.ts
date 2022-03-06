@@ -40,8 +40,6 @@ export const signUpUserWithEmailandPassword = async (
 
         await updateProfile(user, { displayName })
 
-        console.log('firebase userData:', user)
-
         return {
             displayName: user.displayName,
             email: user.email,
