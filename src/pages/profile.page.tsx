@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { User } from 'firebase/auth'
 
-import { auth } from '../firebase/firebase'
+import {
+    auth,
+    changeProfileEmail,
+    changeProfileName,
+} from '../firebase/firebase'
 
 import Loader from '../components/loader.component'
 
@@ -20,7 +24,6 @@ const ProfilePage = () => {
     const {
         register,
         handleSubmit,
-        watch,
         formState: { errors },
     } = useForm<TInputs>()
 
@@ -49,12 +52,12 @@ const ProfilePage = () => {
 
         if (name !== userCredentials?.displayName) {
             // Change name
-            console.log('Change name')
+            await changeProfileName(name)
         }
 
         if (email !== userCredentials?.email) {
             // Change email
-            console.log('Change email')
+            await changeProfileEmail(email)
         }
     }
 

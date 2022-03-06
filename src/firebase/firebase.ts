@@ -4,9 +4,16 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     updateProfile,
+    updateEmail,
 } from 'firebase/auth'
 
-import { doc, setDoc, serverTimestamp, getFirestore } from 'firebase/firestore'
+import {
+    doc,
+    setDoc,
+    serverTimestamp,
+    getFirestore,
+    updateDoc,
+} from 'firebase/firestore'
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -73,4 +80,37 @@ export const setDocOnFirestore = async (
     pathSegment: string
 ) => {
     await setDoc(doc(firestore, collectionName, pathSegment), dataToSet)
+}
+
+// Change name
+export const changeProfileName = async (newName: string) => {
+    try {
+        // Change name in Firestore
+        await updateDoc(doc(firestore, 'users', auth.currentUser!.uid), {
+            displayName: newName,
+            lastUpdated: serverTimestamp(),
+        })
+
+        // Change name in auth
+        await updateProfile(auth.currentUser!, { displayName: newName })
+    } catch (error: any) {
+        console.log(error.code)
+        return error.code
+    }
+}
+
+export const changeProfileEmail = async (newEmail: string) => {
+    try {
+        // Change email in Firestore
+        await updateDoc(doc(firestore, 'users', auth.currentUser!.uid), {
+            email: newEmail,
+            lastUpdated: serverTimestamp(),
+        })
+
+        // Change email in auth
+        await updateEmail(auth.currentUser!, newEmail)
+    } catch (error: any) {
+        console.log(error.code)
+        return error.code
+    }
 }
