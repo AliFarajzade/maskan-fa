@@ -28,7 +28,9 @@ const SignInPage = () => {
 
     const onSubmit: SubmitHandler<TInputs> = async data => {
         setIsLoading(true)
-        const { email, password } = data
+        let { email, password } = data
+
+        email = email.toLocaleLowerCase()
 
         const requestStatus = await signInUserWithEmailandPassword(
             email,

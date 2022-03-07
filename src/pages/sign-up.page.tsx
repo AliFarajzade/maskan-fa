@@ -34,7 +34,9 @@ const SignInPage = () => {
     const onSubmit: SubmitHandler<TInputs> = async data => {
         setIsLoading(true)
         // Get form data
-        const { email, password, name } = data
+        let { email, password, name } = data
+
+        email = email.toLocaleLowerCase()
 
         // Sign up user auth
         const signUpServerResponse = await signUpUserWithEmailandPassword(
@@ -55,13 +57,13 @@ const SignInPage = () => {
 
             default:
                 navigate('/profile')
+                toast.success('ثبت نام با موفقیت انجام شد.')
 
                 await setDocOnFirestore(
                     signUpServerResponse,
                     'users',
                     signUpServerResponse!.uid
                 )
-                toast.success('ثبت نام با موفقیت انجام شد.')
                 break
         }
 

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { User } from 'firebase/auth'
 
+import { toast } from 'react-toastify'
+
 import {
     auth,
     changeProfileEmail,
@@ -21,6 +23,9 @@ const ProfilePage = () => {
     const [userCredentials, setUserCredentials] = useState<User | null>(null)
     const [changeUserDetailsStatus, setChangeUserDetailsStatus] =
         useState<boolean>(false)
+
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+
     const {
         register,
         handleSubmit,
@@ -30,6 +35,7 @@ const ProfilePage = () => {
     useEffect(() => {
         const unSubscribeGoogleAuthObserver = auth.onAuthStateChanged(
             userAuth => {
+                setIsLoading(true)
                 if (userAuth) {
                     setUserCredentials(userAuth)
                 } else {
@@ -37,6 +43,7 @@ const ProfilePage = () => {
                     setUserCredentials(null)
                 }
                 console.log(userAuth)
+                setIsLoading(false)
             }
         )
 
@@ -47,97 +54,153 @@ const ProfilePage = () => {
         auth.signOut()
     }
 
+    const handleError = (errorCode: string) => {
+        switch (errorCode) {
+            case 'auth/network-request-failed':
+                toast.error('خطا در ارسال اطلاعات. اینترنت خود را چک کنید.')
+                break
+            case 'auth/too-many-requests':
+                toast.error('درخواست بیش از حد. کمی بعد تلاش کنید.')
+                break
+
+            default:
+                toast.error(
+                    'لطفا از حساب کاربری خود خارج شده و دوباره تلاش کنید.'
+                )
+                break
+        }
+    }
+
     const onSubmit: SubmitHandler<TInputs> = async data => {
-        const { email, name } = data
+        setIsLoading(true)
+        let { email, name } = data
+
+        if (name.trim() === '') {
+            setIsLoading(false)
+            return
+        }
+
+        email = email.toLocaleLowerCase()
 
         if (name !== userCredentials?.displayName) {
             // Change name
-            await changeProfileName(name)
+            const status = await changeProfileName(name)
+
+            if (status) {
+                console.log(status)
+                handleError(status)
+                setIsLoading(false)
+
+                return
+            }
         }
 
         if (email !== userCredentials?.email) {
             // Change email
-            await changeProfileEmail(email)
+            const status = await changeProfileEmail(email)
+
+            if (status) {
+                console.log(status)
+                handleError(status)
+                setIsLoading(false)
+
+                return
+            }
         }
+        toast.success('تغییرات با موفقیت انجام شد.')
+        setIsLoading(false)
     }
 
-    return userCredentials ? (
-        <div className="profile">
-            <header className="profileHeader">
-                <p className="pageHeader">حساب کاربری</p>
-                <button onClick={signOut} className="logOut">
-                    خروج
-                </button>
-            </header>
+    return (
+        <>
+            {userCredentials && (
+                <div className="profile">
+                    <header className="profileHeader">
+                        <p className="pageHeader">حساب کاربری</p>
+                        <button onClick={signOut} className="logOut">
+                            خروج
+                        </button>
+                    </header>
 
-            <main>
-                <div className="profileDetailsHeader">
-                    <p className="profileDetailsText">اطلاعات کاربری</p>
-                    <p
-                        className="changePersonalDetails"
-                        onClick={() => {
-                            setChangeUserDetailsStatus(!changeUserDetailsStatus)
-                        }}
-                    >
-                        {
-                            // prettier-ignore
-                            changeUserDetailsStatus
+                    <main>
+                        <div className="profileDetailsHeader">
+                            <p className="profileDetailsText">اطلاعات کاربری</p>
+                            <p
+                                className="changePersonalDetails"
+                                onClick={() => {
+                                    setChangeUserDetailsStatus(
+                                        !changeUserDetailsStatus
+                                    )
+                                }}
+                            >
+                                {
+                                    // prettier-ignore
+                                    changeUserDetailsStatus
                                  ? 'عدم تغییر'
                                  : 'تغییر'
-                        }
-                    </p>
-                </div>
+                                }
+                            </p>
+                        </div>
 
-                <div className="profileCard">
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        <input
-                            type="text"
-                            id="name"
-                            className={
-                                !changeUserDetailsStatus
-                                    ? 'profileName'
-                                    : 'profileNameActive'
-                            }
-                            disabled={!changeUserDetailsStatus}
-                            {...register('name', {
-                                required: true,
-                            })}
-                            defaultValue={userCredentials.displayName!}
-                        />
+                        <div className="profileCard">
+                            <form onSubmit={handleSubmit(onSubmit)}>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    className={
+                                        !changeUserDetailsStatus
+                                            ? 'profileName'
+                                            : 'profileNameActive'
+                                    }
+                                    disabled={!changeUserDetailsStatus}
+                                    defaultValue={userCredentials.displayName!}
+                                    {...register('name', {
+                                        required: true,
+                                    })}
+                                />
 
-                        {errors.name && (
-                            <span className="field-error">
-                                نام نمیتواند خالی باشد.
-                            </span>
-                        )}
-                        <input
-                            type="text"
-                            id="email"
-                            className={
-                                !changeUserDetailsStatus
-                                    ? 'profileEmail'
-                                    : 'profileEmailActive'
-                            }
-                            disabled={!changeUserDetailsStatus}
-                            {...register('email', {
-                                required: true,
-                                pattern:
-                                    /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/,
-                            })}
-                            defaultValue={userCredentials.email!}
-                        />
-                        {errors.email && (
-                            <span className="field-error">
-                                لطفا یک ایمیل معتبر وارد کنید.
-                            </span>
-                        )}
-                        <button className="btn btn--primary">ثبت</button>
-                    </form>
+                                <input
+                                    type="text"
+                                    id="email"
+                                    className={
+                                        !changeUserDetailsStatus
+                                            ? 'profileEmail'
+                                            : 'profileEmailActive'
+                                    }
+                                    disabled={!changeUserDetailsStatus}
+                                    defaultValue={userCredentials.email!}
+                                    {...register('email', {
+                                        pattern:
+                                            /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/,
+                                    })}
+                                />
+                                {errors.email && (
+                                    <span className="field-error">
+                                        لطفا یک ایمیل معتبر وارد کنید.
+                                    </span>
+                                )}
+                                <button
+                                    style={{
+                                        cursor: changeUserDetailsStatus
+                                            ? 'pointer'
+                                            : 'default',
+                                        backgroundColor: changeUserDetailsStatus
+                                            ? '#00cc66'
+                                            : '#999',
+                                    }}
+                                    disabled={!changeUserDetailsStatus}
+                                    className="btn btn--primary"
+                                >
+                                    ثبت
+                                </button>
+                            </form>
+                        </div>
+                    </main>
                 </div>
-            </main>
-        </div>
-    ) : (
-        <Loader loadingState={true} />
+            )}
+
+            <Loader loadingState={isLoading} />
+        </>
     )
 }
 

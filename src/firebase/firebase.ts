@@ -85,14 +85,19 @@ export const setDocOnFirestore = async (
 // Change name
 export const changeProfileName = async (newName: string) => {
     try {
+        // Change name in auth
+        await updateProfile(auth.currentUser!, { displayName: newName })
+    } catch (error: any) {
+        console.log(error.code)
+        return error.code
+    }
+
+    try {
         // Change name in Firestore
         await updateDoc(doc(firestore, 'users', auth.currentUser!.uid), {
             displayName: newName,
             lastUpdated: serverTimestamp(),
         })
-
-        // Change name in auth
-        await updateProfile(auth.currentUser!, { displayName: newName })
     } catch (error: any) {
         console.log(error.code)
         return error.code
@@ -101,14 +106,19 @@ export const changeProfileName = async (newName: string) => {
 
 export const changeProfileEmail = async (newEmail: string) => {
     try {
+        // Change email in auth
+        await updateEmail(auth.currentUser!, newEmail)
+    } catch (error: any) {
+        console.log(error.code)
+        return error.code
+    }
+
+    try {
         // Change email in Firestore
         await updateDoc(doc(firestore, 'users', auth.currentUser!.uid), {
             email: newEmail,
             lastUpdated: serverTimestamp(),
         })
-
-        // Change email in auth
-        await updateEmail(auth.currentUser!, newEmail)
     } catch (error: any) {
         console.log(error.code)
         return error.code
