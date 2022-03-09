@@ -9,5 +9,6 @@ declare module '*.svg' {
     export default src
 }
 
+declare module '*.jpg';
 declare module '*.woff'
 declare module '*.woff2'

@@ -5,6 +5,7 @@ import {
     signInWithEmailAndPassword,
     updateProfile,
     updateEmail,
+    sendPasswordResetEmail,
 } from 'firebase/auth'
 
 import {
@@ -119,6 +120,15 @@ export const changeProfileEmail = async (newEmail: string) => {
             email: newEmail,
             lastUpdated: serverTimestamp(),
         })
+    } catch (error: any) {
+        console.log(error.code)
+        return error.code
+    }
+}
+
+export const recoverPassword = async (email: string) => {
+    try {
+        await sendPasswordResetEmail(auth, email)
     } catch (error: any) {
         console.log(error.code)
         return error.code
