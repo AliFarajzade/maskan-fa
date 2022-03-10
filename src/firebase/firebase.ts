@@ -14,7 +14,17 @@ import {
     serverTimestamp,
     getFirestore,
     updateDoc,
+    collection,
+    getDocs,
+    query,
+    where,
+    orderBy,
+    limit,
+    DocumentData,
+    // startAfter,
+    DocumentSnapshot,
 } from 'firebase/firestore'
+import { TLisitngs } from '../types/lisiting.types'
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -129,6 +139,41 @@ export const changeProfileEmail = async (newEmail: string) => {
 export const recoverPassword = async (email: string) => {
     try {
         await sendPasswordResetEmail(auth, email)
+    } catch (error: any) {
+        console.log(error.code)
+        return error.code
+    }
+}
+
+// Getting documents from collection
+export const getListingsDocuments = async (value: string) => {
+    try {
+        const collectionRef = collection(firestore, 'listings')
+
+        const q = query(
+            collectionRef,
+            where('type', '==', value),
+            orderBy('timestamp', 'desc'),
+            limit(10)
+        )
+
+        const querySnapshot = await getDocs(q)
+
+        if (querySnapshot.empty) return null
+
+        const listings: TLisitngs[] | DocumentData | undefined = []
+
+        const { docs: docsSnapshot } = querySnapshot
+
+        docsSnapshot.forEach((documentSnapshot: DocumentSnapshot) =>
+            listings.push({
+                ...documentSnapshot.data(),
+                id: documentSnapshot.id,
+            })
+        )
+
+        console.log(listings)
+        return listings
     } catch (error: any) {
         console.log(error.code)
         return error.code

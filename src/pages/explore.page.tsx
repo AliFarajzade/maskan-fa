@@ -1,3 +1,36 @@
-const ExplorePage = () => <h1>ExplorePage</h1>
+import { Link } from 'react-router-dom'
+
+import rentCategoryImage from '../assets/jpg/rentCategoryImage.jpg'
+import sellCategoryImage from '../assets/jpg/sellCategoryImage.jpg'
+
+const ExplorePage = () => (
+    <div className="explore">
+        <header>
+            <p className="pageHeader">آگهی ها</p>
+        </header>
+
+        <main>
+            <p className="exploreCategoryHeading">دسته بندی</p>
+            <div className="exploreCategories">
+                <Link to="/category/rent">
+                    <img
+                        src={rentCategoryImage}
+                        alt="rent"
+                        className="exploreCategoryImg"
+                    />
+                    <p className="exploreCategoryName">برای اجاره</p>
+                </Link>
+                <Link to="/category/sale">
+                    <img
+                        src={sellCategoryImage}
+                        alt="sell"
+                        className="exploreCategoryImg"
+                    />
+                    <p className="exploreCategoryName">برای فروش</p>
+                </Link>
+            </div>
+        </main>
+    </div>
+)
 
 export default ExplorePage
