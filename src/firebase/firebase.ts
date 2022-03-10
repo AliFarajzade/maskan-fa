@@ -179,3 +179,37 @@ export const getListingsDocuments = async (value: string) => {
         return error.code
     }
 }
+
+export const getOffers = async () => {
+    try {
+        const collectionRef = collection(firestore, 'listings')
+
+        const q = query(
+            collectionRef,
+            where('offer', '==', true),
+            orderBy('timestamp', 'desc'),
+            limit(10)
+        )
+
+        const querySnapshot = await getDocs(q)
+
+        if (querySnapshot.empty) return null
+
+        const listings: TLisitngs[] | DocumentData | undefined = []
+
+        const { docs: docsSnapshot } = querySnapshot
+
+        docsSnapshot.forEach((documentSnapshot: DocumentSnapshot) =>
+            listings.push({
+                ...documentSnapshot.data(),
+                id: documentSnapshot.id,
+            })
+        )
+
+        console.log(listings)
+        return listings
+    } catch (error: any) {
+        console.log(error.code)
+        return error.code
+    }
+}

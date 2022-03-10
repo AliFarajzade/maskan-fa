@@ -24,11 +24,8 @@ const CategoryPage = () => {
 
             switch (requestStatus) {
                 case null:
-                    toast.error('اطلاعات یافت نشد.')
-                    break
-
                 case []:
-                    toast.error('اطلاعاتی وجود ندارد.')
+                    toast.error('اطلاعات یافت نشد.')
                     break
 
                 case 'storage/unknown':
