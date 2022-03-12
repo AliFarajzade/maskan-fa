@@ -1,17 +1,33 @@
 import { useEffect, useState } from 'react'
+
 import { useNavigate } from 'react-router-dom'
 import { User } from 'firebase/auth'
 
-import { auth } from '../firebase/firebase'
+import { auth, uploadImage, setDocOnFirestore } from '../firebase/firebase'
 import Loader from '../components/loader.component'
 import { toast } from 'react-toastify'
+import { serverTimestamp } from 'firebase/firestore'
 
 const CreateListingPage = () => {
     const navigate = useNavigate()
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [, setUserCredentials] = useState<User | null>(null)
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<{
+        type: string
+        name: string
+        address: string
+        bedrooms: number
+        bathrooms: number
+        regularPrice: number
+        discountedPrice?: number
+        latitude: number
+        longitude: number
+        offer: boolean
+        parking: boolean
+        furnished: boolean
+        images?: any[]
+    }>({
         type: 'rent',
         name: '',
         bedrooms: 0,
@@ -84,23 +100,44 @@ const CreateListingPage = () => {
             }))
     }
 
-    const onSubmit = (e: any): void => {
+    const onSubmit = async (e: any) => {
         e.preventDefault()
         console.log(formData)
 
         setIsLoading(true)
 
-        if (images.length > 6) {
+        if (images!.length > 6) {
             toast.error('حداکثر ۶ عکس مجار می باشد.')
             setIsLoading(false)
             return
         }
 
-        if (discountedPrice >= regularPrice) {
+        if (discountedPrice! >= regularPrice) {
             toast.error('قیمت تخفیف دار باید کمتر از قیمت معمولی باشد.')
             setIsLoading(false)
             return
         }
+
+        const imageUrls = await Promise.all(
+            [...images!].map(imageEl => uploadImage(imageEl))
+        ).catch(() => {
+            toast.error('خطایی رخ داده است. دوباره تلاش کنید.')
+            return
+        })
+
+        const dataToSend = {
+            ...formData,
+            creatorID: auth.currentUser?.uid,
+            imageUrls,
+            timestamp: serverTimestamp(),
+        }
+
+        delete dataToSend.images
+        !offer && delete dataToSend.discountedPrice
+
+        const status = await setDocOnFirestore(dataToSend, 'listings')
+
+        if (status) toast.error('خطایی رخ داده است. دوباره تلاش کنید.')
 
         setIsLoading(false)
     }
@@ -109,7 +146,7 @@ const CreateListingPage = () => {
         <>
             <div className="profile">
                 <header>
-                    <p className="pageHeader">ایحاد آکهی</p>
+                    <p className="pageHeader">ایحاد آگهی</p>
                 </header>
 
                 <main>
@@ -316,7 +353,6 @@ const CreateListingPage = () => {
                                 value={regularPrice}
                                 onChange={onMutate}
                                 min="50"
-                                max="750000000"
                                 required
                             />
                             {type === 'rent' && (
@@ -339,7 +375,6 @@ const CreateListingPage = () => {
                                     value={discountedPrice}
                                     onChange={onMutate}
                                     min="50"
-                                    max="750000000"
                                     required={offer}
                                 />
                                 <p className="formPriceText">تومان</p>

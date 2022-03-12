@@ -1,4 +1,4 @@
-export type TLisitngs = {
+export type TLisitng = {
     id?: string
     name: string
     type: string
@@ -17,4 +17,6 @@ export type TLisitngs = {
         lat: string
         lng: string
     }
+
+    creatorID?: string
 }

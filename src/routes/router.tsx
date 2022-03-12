@@ -9,6 +9,7 @@ import ForgotPasswordPage from '../pages/forgot-password.page'
 import NotFoundPage from '../pages/not-found.page'
 import CategoryPage from '../pages/category.page'
 import CreateListingPage from '../pages/create-listing.page'
+import Listing from '../pages/lisitng.page'
 
 const RoutesManager = () => {
     return (
@@ -21,6 +22,10 @@ const RoutesManager = () => {
             <Route path="/category/:categoryName" element={<CategoryPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/create-listing" element={<CreateListingPage />} />
+            <Route
+                path="/category/:categoryName/:houseID"
+                element={<Listing />}
+            />
             <Route path="/*" element={<NotFoundPage />} />
         </Routes>
     )

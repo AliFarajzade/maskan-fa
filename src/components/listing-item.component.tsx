@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom'
 import bedIcon from '../assets/svg/bedIcon.svg'
 import bathtubIcon from '../assets/svg/bathtubIcon.svg'
 
-import { TLisitngs } from '../types/lisiting.types'
+import { TLisitng } from '../types/lisiting.types'
 
 type IProps = {
-    data: TLisitngs
+    data: TLisitng
 }
 
 const ListingItem: React.FC<IProps> = ({

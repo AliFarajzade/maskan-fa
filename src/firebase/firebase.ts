@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app'
+import { v4 as uuid } from 'uuid'
 import {
     getAuth,
     createUserWithEmailAndPassword,
@@ -9,6 +10,7 @@ import {
 } from 'firebase/auth'
 
 import {
+    addDoc,
     doc,
     setDoc,
     serverTimestamp,
@@ -16,6 +18,7 @@ import {
     updateDoc,
     collection,
     getDocs,
+    getDoc,
     query,
     where,
     orderBy,
@@ -24,7 +27,14 @@ import {
     // startAfter,
     DocumentSnapshot,
 } from 'firebase/firestore'
-import { TLisitngs } from '../types/lisiting.types'
+import { TLisitng } from '../types/lisiting.types'
+
+import {
+    getStorage,
+    ref,
+    uploadBytesResumable,
+    getDownloadURL,
+} from 'firebase/storage'
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -40,6 +50,8 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig)
 
 export const auth = getAuth()
+
+const storage = getStorage()
 
 const firestore = getFirestore()
 
@@ -88,9 +100,16 @@ export const signInUserWithEmailandPassword = async (
 export const setDocOnFirestore = async (
     dataToSet: any,
     collectionName: string,
-    pathSegment: string
+    pathSegment: string = ''
 ) => {
-    await setDoc(doc(firestore, collectionName, pathSegment), dataToSet)
+    try {
+        if (pathSegment)
+            await setDoc(doc(firestore, collectionName, pathSegment), dataToSet)
+        else await addDoc(collection(firestore, collectionName), dataToSet)
+    } catch (error: any) {
+        console.log(error.code)
+        return error.code
+    }
 }
 
 // Change name
@@ -161,7 +180,7 @@ export const getListingsDocuments = async (value: string) => {
 
         if (querySnapshot.empty) return null
 
-        const listings: TLisitngs[] | DocumentData | undefined = []
+        const listings: TLisitng[] | DocumentData | undefined = []
 
         const { docs: docsSnapshot } = querySnapshot
 
@@ -195,7 +214,7 @@ export const getOffers = async () => {
 
         if (querySnapshot.empty) return null
 
-        const listings: TLisitngs[] | DocumentData | undefined = []
+        const listings: TLisitng[] | DocumentData | undefined = []
 
         const { docs: docsSnapshot } = querySnapshot
 
@@ -208,6 +227,65 @@ export const getOffers = async () => {
 
         console.log(listings)
         return listings
+    } catch (error: any) {
+        console.log(error.code)
+        return error.code
+    }
+}
+
+export const uploadImage = async (imageFile: any) =>
+    new Promise((resolve, reject) => {
+        const fileName = `${auth.currentUser?.uid}-${imageFile.name}-${uuid()}`
+
+        const storageRef = ref(storage, `images/${fileName}`)
+
+        const uploadTask = uploadBytesResumable(storageRef, imageFile)
+
+        uploadTask.on(
+            'state_changed',
+            snapshot => {
+                // Observe state change events such as progress, pause, and resume
+                // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                const progress =
+                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                console.log('Upload is ' + progress + '% done')
+                switch (snapshot.state) {
+                    case 'paused':
+                        console.log('Upload is paused')
+                        break
+                    case 'running':
+                        console.log('Upload is running')
+                        break
+                }
+            },
+
+            (error: any) => {
+                console.log(error.code)
+                reject(error.code)
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
+                    console.log('File available at', downloadURL)
+                    resolve(downloadURL)
+                })
+            }
+        )
+    })
+
+export const getDocument = async (
+    collectionName: string,
+    documentID: string
+) => {
+    try {
+        const docRef = doc(firestore, collectionName, documentID)
+
+        const docSnap = await getDoc(docRef)
+
+        if (docSnap.exists()) {
+            return docSnap.data()
+        } else {
+            return null
+        }
     } catch (error: any) {
         console.log(error.code)
         return error.code

@@ -521,7 +521,7 @@ button {
     cursor: pointer;
     position: fixed;
     top: 3%;
-    right: 5%;
+    left: 5%;
     z-index: 2;
     background-color: #ffffff;
     border-radius: 50%;
@@ -554,6 +554,7 @@ button {
 }
 
 .listingType {
+    margin-left: 1em;
     padding: 0.25rem 0.5rem;
     background-color: #00cc66;
     color: #ffffff;
@@ -593,14 +594,28 @@ button {
 }
 
 .linkCopied {
+    display: block;
     position: fixed;
     top: 9%;
-    right: 5%;
+    left: 5%;
     z-index: 2;
     background-color: #ffffff;
     border-radius: 1rem;
     padding: 0.5rem 1rem;
     font-weight: 600;
+    animation: FadeAway 0.2s ease;
+    tranition: all 0.2s ease;
+}
+
+@keyframes FadeAway {
+    from {
+        display: none;
+        opacity: 0;
+    }
+    to {
+        display: block;
+        opacity: 1;
+    }
 }
 
 .contactListingName {

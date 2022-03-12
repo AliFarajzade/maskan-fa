@@ -5,10 +5,10 @@ import ListingItem from '../components/listing-item.component'
 import Loader from '../components/loader.component'
 
 import { getListingsDocuments } from '../firebase/firebase'
-import { TLisitngs } from '../types/lisiting.types'
+import { TLisitng } from '../types/lisiting.types'
 
 const CategoryPage = () => {
-    const [listings, setListings] = useState<TLisitngs[] | [] | null>()
+    const [listings, setListings] = useState<TLisitng[] | [] | null>()
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const { categoryName } = useParams()
@@ -28,7 +28,7 @@ const CategoryPage = () => {
                     toast.error('اطلاعات یافت نشد.')
                     break
 
-                case 'storage/unknown':
+                case 'firestore/unknown':
                     toast.error('خطایی رخ داده است. دوباره تلاش کنید.')
                     break
 
