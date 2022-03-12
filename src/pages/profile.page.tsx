@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { User } from 'firebase/auth'
+
+import rightArrow from '../assets/svg/keyboardArrowRightIcon.svg'
+import homeIcon from '../assets/svg/homeIcon.svg'
 
 import { toast } from 'react-toastify'
 
@@ -195,6 +198,16 @@ const ProfilePage = () => {
                                 </button>
                             </form>
                         </div>
+
+                        <Link to="/create-listing" className="createListing">
+                            <img src={homeIcon} alt="home" />
+                            <p>ایجاد آگهی فروش یا اجاره</p>
+                            <img
+                                style={{ transform: 'rotate(180deg)' }}
+                                src={rightArrow}
+                                alt="arrow right"
+                            />
+                        </Link>
                     </main>
                 </div>
             )}

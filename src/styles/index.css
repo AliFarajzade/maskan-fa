@@ -34,6 +34,7 @@ body {
     background-color: #f2f4f8;
     margin: 0;
     box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 a {
@@ -766,10 +767,12 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 }
 .formButtonActive {
     background-color: #00cc66;
     color: #ffffff;
+    cursor: default;
 }
 
 .flex {
@@ -894,4 +897,8 @@ button {
 .btn--primary {
     background-color: #00cc66;
     color: white;
+}
+
+.flex-column {
+    flex-direction: column !important;
 }
