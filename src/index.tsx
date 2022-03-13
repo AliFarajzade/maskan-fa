@@ -8,6 +8,7 @@ import reportWebVitals from './reportWebVitals'
 
 import './styles/index.css'
 import 'react-toastify/dist/ReactToastify.css'
+import 'swiper/swiper-bundle.css'
 
 ReactDOM.render(
     <BrowserRouter>

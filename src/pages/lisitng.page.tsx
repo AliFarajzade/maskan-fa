@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react'
+import { v4 as uuid } from 'uuid'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import SwiperCore, { Navigation, Pagination, Scrollbar, A11y } from 'swiper'
+import { Swiper, SwiperSlide } from 'swiper/react'
 import { auth, getDocument } from '../firebase/firebase'
 import { Link, useParams } from 'react-router-dom'
 import Loader from '../components/loader.component'
@@ -9,9 +12,9 @@ import { toast } from 'react-toastify'
 
 import shareIcon from '../assets/svg/shareIcon.svg'
 
-const Listing = () => {
-    console.log(auth.currentUser)
+SwiperCore.use([Navigation, Pagination, Scrollbar, A11y])
 
+const Listing = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [shareLinkStatus, setShareLinkStatus] = useState<boolean>(false)
     const [data, setData] = useState<TLisitng | null>(null)
@@ -43,7 +46,6 @@ const Listing = () => {
                 } else {
                     setUserCredentials(null)
                 }
-                console.log(userAuth)
             }
         )
 
@@ -52,9 +54,21 @@ const Listing = () => {
 
     return (
         <>
-            {data && (
+            {data && typeof data === 'object' && (
                 <main>
-                    {/* SLIDER */}
+                    <Swiper slidesPerView={1} pagination={{ clickable: true }}>
+                        {data.imageUrls.map(url => (
+                            <SwiperSlide key={uuid()}>
+                                <div
+                                    style={{
+                                        background: `url(${url}) center no-repeat`,
+                                        backgroundSize: 'cover',
+                                    }}
+                                    className="swiperSlideDiv"
+                                ></div>
+                            </SwiperSlide>
+                        ))}
+                    </Swiper>
 
                     <div
                         className="shareIconDiv"
