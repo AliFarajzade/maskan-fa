@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { auth, getDocument } from '../firebase/firebase'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import Loader from '../components/loader.component'
 import { TLisitng } from '../types/lisiting.types'
 import { User } from 'firebase/auth'
@@ -14,7 +14,7 @@ const Listing = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [shareLinkStatus, setShareLinkStatus] = useState<boolean>(false)
     const [data, setData] = useState<TLisitng | null>(null)
-    const [userCredentials, setUserCredentials] = useState<null | User>(null)
+    const [, setUserCredentials] = useState<null | User>(null)
 
     const { houseID } = useParams()
 
@@ -32,7 +32,7 @@ const Listing = () => {
             setData(status)
             setIsLoading(false)
         })()
-    }, [])
+    }, [houseID])
 
     useEffect(() => {
         const unSubscribeGoogleAuthObserver = auth.onAuthStateChanged(
