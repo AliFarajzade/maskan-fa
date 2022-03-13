@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import { auth, getDocument } from '../firebase/firebase'
 import { Link, useParams } from 'react-router-dom'
 import Loader from '../components/loader.component'
@@ -85,7 +86,7 @@ const Listing = () => {
                                       .replace(/\B(?=(\d{3})+(?!\d))/g, ',') +
                                   ' تومان'}
                         </p>
-                        <p className="listingLocation">{data.location}</p>
+                        <p className="listingLocation">{data.address}</p>
                         <p className="listingType">
                             برای
                             {data.type ===
@@ -120,12 +121,28 @@ const Listing = () => {
 
                         <p className="listingLocationTitle">موقعیت</p>
 
-                        {/* MAP */}
+                        <div className="leafletContainer">
+                            <MapContainer
+                                center={[+data.latitude, +data.longitude]}
+                                scrollWheelZoom={false}
+                                zoom={15}
+                            >
+                                <TileLayer
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                />
+                                <Marker
+                                    position={[+data.latitude, +data.longitude]}
+                                >
+                                    <Popup>{data.address}</Popup>
+                                </Marker>
+                            </MapContainer>
+                        </div>
 
                         {(auth.currentUser?.uid !== data.creatorID ||
                             auth.currentUser === null) && (
                             <Link
-                                to={`/contact/${data.creatorID}?listingName=${data.name}&listingLocation=${data.location}`}
+                                to={`/contact/${data.creatorID}?listingName=${data.name}&listingLocation=${data.address}`}
                                 className="primaryButton"
                             >
                                 ارتباط با صاحب

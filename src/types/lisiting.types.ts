@@ -3,7 +3,7 @@ export type TLisitng = {
     name: string
     type: string
     userRef: string
-    location: string
+    address: string
     timestamp: string
     bedrooms: number
     bathrooms: number
@@ -13,10 +13,9 @@ export type TLisitng = {
     furnished: boolean
     offer: boolean
     imageUrls: string[]
-    geolocation: {
-        lat: string
-        lng: string
-    }
+
+    latitude: string
+    longitude: string
 
     creatorID?: string
 }

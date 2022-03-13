@@ -13,7 +13,7 @@ type IProps = {
 const ListingItem: React.FC<IProps> = ({
     data: {
         name,
-        location,
+        address,
         offer,
         discountedPrice,
         regularPrice,
@@ -36,7 +36,7 @@ const ListingItem: React.FC<IProps> = ({
                     className="categoryListingImg"
                 />
                 <div className="categoryListingDetails">
-                    <p className="categoryListingLocation">{location}</p>
+                    <p className="categoryListingLocation">{address}</p>
                     <p className="categoryListingName">{name}</p>
 
                     <p className="categoryListingPrice">
