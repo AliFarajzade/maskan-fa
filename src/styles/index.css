@@ -917,3 +917,12 @@ button {
 .flex-column {
     flex-direction: column !important;
 }
+
+.italic {
+    font-style: italic;
+    color: #333;
+}
+
+.pb-3 {
+    padding-bottom: 4rem;
+}

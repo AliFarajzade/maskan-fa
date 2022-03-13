@@ -125,7 +125,7 @@ const Listing = () => {
                         {(auth.currentUser?.uid !== data.creatorID ||
                             auth.currentUser === null) && (
                             <Link
-                                to={`/contact/${data.userRef}?listingName=${data.name}&listingLocation=${data.location}`}
+                                to={`/contact/${data.creatorID}?listingName=${data.name}&listingLocation=${data.location}`}
                                 className="primaryButton"
                             >
                                 ارتباط با صاحب
