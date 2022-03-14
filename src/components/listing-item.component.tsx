@@ -4,10 +4,11 @@ import { Link } from 'react-router-dom'
 import bedIcon from '../assets/svg/bedIcon.svg'
 import bathtubIcon from '../assets/svg/bathtubIcon.svg'
 
-import { TLisitng } from '../types/lisiting.types'
+import { TListing } from '../types/lisiting.types'
+import { numberDivider } from '../helpers/divider.helper'
 
 type IProps = {
-    data: TLisitng
+    data: TListing
 }
 
 const ListingItem: React.FC<IProps> = ({
@@ -41,12 +42,8 @@ const ListingItem: React.FC<IProps> = ({
 
                     <p className="categoryListingPrice">
                         {offer
-                            ? discountedPrice
-                                  .toString()
-                                  .replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-                            : regularPrice
-                                  .toString()
-                                  .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                            ? numberDivider(discountedPrice)
+                            : numberDivider(regularPrice)}
                         {' تومان'} {type === 'rent' && '/ ماهانه'}
                     </p>
                     <div className="categoryListingInfoDiv">

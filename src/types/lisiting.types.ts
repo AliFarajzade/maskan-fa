@@ -1,4 +1,4 @@
-export type TLisitng = {
+export type TListing = {
     id?: string
     name: string
     type: string

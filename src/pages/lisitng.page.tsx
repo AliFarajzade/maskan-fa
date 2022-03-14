@@ -6,18 +6,19 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { auth, getDocument } from '../firebase/firebase'
 import { Link, useParams } from 'react-router-dom'
 import Loader from '../components/loader.component'
-import { TLisitng } from '../types/lisiting.types'
+import { TListing } from '../types/lisiting.types'
 import { User } from 'firebase/auth'
 import { toast } from 'react-toastify'
 
 import shareIcon from '../assets/svg/shareIcon.svg'
+import { numberDivider } from '../helpers/divider.helper'
 
 SwiperCore.use([Navigation, Pagination, Scrollbar, A11y])
 
 const Listing = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [shareLinkStatus, setShareLinkStatus] = useState<boolean>(false)
-    const [data, setData] = useState<TLisitng | null>(null)
+    const [data, setData] = useState<TListing | null>(null)
     const [, setUserCredentials] = useState<null | User>(null)
 
     const { houseID } = useParams()
@@ -91,14 +92,8 @@ const Listing = () => {
                         <p className="listingName">
                             {data.name} -
                             {data.offer
-                                ? data.discountedPrice
-                                      .toString()
-                                      .replace(/\B(?=(\d{3})+(?!\d))/g, ',') +
-                                  ' تومان'
-                                : data.regularPrice
-                                      .toString()
-                                      .replace(/\B(?=(\d{3})+(?!\d))/g, ',') +
-                                  ' تومان'}
+                                ? numberDivider(data.discountedPrice) + ' تومان'
+                                : numberDivider(data.regularPrice) + ' تومان'}
                         </p>
                         <p className="listingLocation">{data.address}</p>
                         <p className="listingType">
@@ -111,9 +106,9 @@ const Listing = () => {
                         </p>
                         {data.offer && (
                             <p className="discountPrice">
-                                {(data.regularPrice - data.discountedPrice)
-                                    .toString()
-                                    .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}
+                                {numberDivider(
+                                    data.regularPrice - data.discountedPrice
+                                )}{' '}
                                 تومان تخفیف
                             </p>
                         )}

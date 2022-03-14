@@ -4,10 +4,10 @@ import ListingItem from '../components/listing-item.component'
 import Loader from '../components/loader.component'
 
 import { getOffers } from '../firebase/firebase'
-import { TLisitng } from '../types/lisiting.types'
+import { TListing } from '../types/lisiting.types'
 
 const OffersPage = () => {
-    const [listings, setListings] = useState<TLisitng[] | [] | null>()
+    const [listings, setListings] = useState<TListing[] | [] | null>()
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     useEffect(() => {

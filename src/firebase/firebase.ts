@@ -27,7 +27,7 @@ import {
     // startAfter,
     DocumentSnapshot,
 } from 'firebase/firestore'
-import { TLisitng } from '../types/lisiting.types'
+import { TListing } from '../types/lisiting.types'
 
 import {
     getStorage,
@@ -180,7 +180,7 @@ export const getListingsDocuments = async (value: string) => {
 
         if (querySnapshot.empty) return null
 
-        const listings: TLisitng[] | DocumentData | undefined = []
+        const listings: TListing[] | DocumentData | undefined = []
 
         const { docs: docsSnapshot } = querySnapshot
 
@@ -214,7 +214,7 @@ export const getOffers = async () => {
 
         if (querySnapshot.empty) return null
 
-        const listings: TLisitng[] | DocumentData | undefined = []
+        const listings: TListing[] | DocumentData | undefined = []
 
         const { docs: docsSnapshot } = querySnapshot
 
@@ -286,6 +286,35 @@ export const getDocument = async (
         } else {
             return null
         }
+    } catch (error: any) {
+        console.log(error.code)
+        return error.code
+    }
+}
+
+export const getListingsForExploreSlider = async () => {
+    try {
+        const collectionRef = collection(firestore, 'listings')
+
+        const q = query(collectionRef, orderBy('timestamp', 'desc'), limit(4))
+
+        const querySnapshot = await getDocs(q)
+
+        if (querySnapshot.empty) return null
+
+        const listings: TListing[] | DocumentData | undefined = []
+
+        const { docs: docsSnapshot } = querySnapshot
+
+        docsSnapshot.forEach((documentSnapshot: DocumentSnapshot) =>
+            listings.push({
+                ...documentSnapshot.data(),
+                id: documentSnapshot.id,
+            })
+        )
+
+        console.log(listings)
+        return listings
     } catch (error: any) {
         console.log(error.code)
         return error.code
