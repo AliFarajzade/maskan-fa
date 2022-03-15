@@ -69,7 +69,6 @@ const CreateListingPage = () => {
                     navigate('/login')
                     setUserCredentials(null)
                 }
-                console.log(userAuth)
                 setIsLoading(false)
             }
         )
@@ -102,7 +101,6 @@ const CreateListingPage = () => {
 
     const onSubmit = async (e: any) => {
         e.preventDefault()
-        console.log(formData)
 
         setIsLoading(true)
 

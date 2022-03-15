@@ -27,7 +27,6 @@ const ForgotPasswordPage = () => {
 
         const { email } = data
         const status = await recoverPassword(email)
-        console.log(status)
 
         if (!status) {
             toast.success('ایمیل ارسال شد.')

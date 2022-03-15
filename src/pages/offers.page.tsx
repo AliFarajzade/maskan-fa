@@ -15,7 +15,6 @@ const OffersPage = () => {
             setIsLoading(true)
             const requestStatus = await getOffers()
 
-            console.log(requestStatus)
 
             switch (requestStatus) {
                 case null:

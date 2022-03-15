@@ -28,7 +28,6 @@ const Listing = () => {
             setIsLoading(true)
             const status = await getDocument('listings', houseID!)
 
-            console.log(status)
             if (status === null) {
                 toast.error('اطلاعات یافت نشد.')
                 return

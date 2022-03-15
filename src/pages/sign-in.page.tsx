@@ -1,14 +1,15 @@
-// TODO: Redirect when signed in.
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { toast } from 'react-toastify'
 
-import { signInUserWithEmailandPassword } from '../firebase/firebase'
+import { auth, signInUserWithEmailandPassword } from '../firebase/firebase'
 
 import { ReactComponent as ArrowRightIcon } from '../assets/svg/keyboardArrowRightIcon.svg'
 import visibilityIcon from '../assets/svg/visibilityIcon.svg'
 import Loader from '../components/loader.component'
+import OAuth from '../components/google-auth.component'
+import { User } from '@firebase/auth'
 
 type TInputs = {
     email: string
@@ -18,6 +19,7 @@ type TInputs = {
 const SignInPage = () => {
     const navigate = useNavigate()
 
+    const [, setUserCredentials] = useState<User | null>(null)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [passwordVisibility, setPasswordVisibility] = useState<boolean>(false)
     const {
@@ -26,6 +28,22 @@ const SignInPage = () => {
         watch,
         formState: { errors },
     } = useForm<TInputs>()
+
+    useEffect(() => {
+        const unSubscribeGoogleAuthObserver = auth.onAuthStateChanged(
+            userAuth => {
+                setIsLoading(true)
+                if (userAuth) {
+                    navigate('/profile')
+                } else {
+                    setUserCredentials(null)
+                }
+                setIsLoading(false)
+            }
+        )
+
+        return () => unSubscribeGoogleAuthObserver()
+    }, [navigate])
 
     const onSubmit: SubmitHandler<TInputs> = async data => {
         setIsLoading(true)
@@ -127,7 +145,7 @@ const SignInPage = () => {
                     </div>
                 </form>
 
-                {/* Google Auth */}
+                <OAuth />
 
                 <Link to="/register" className="registerLink">
                     ثبت نام

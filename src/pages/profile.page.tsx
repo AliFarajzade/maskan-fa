@@ -56,7 +56,6 @@ const ProfilePage = () => {
                     navigate('/login')
                     setUserCredentials(null)
                 }
-                console.log(userAuth)
                 setIsLoading(false)
             }
         )
@@ -133,7 +132,6 @@ const ProfilePage = () => {
     }
 
     const onEdit = async (listingID: string) => {
-        console.log('Edit')
         navigate(`/edit-listing/${listingID}`)
     }
 
@@ -153,7 +151,6 @@ const ProfilePage = () => {
             const status = await changeProfileName(name)
 
             if (status) {
-                console.log(status)
                 handleError(status)
                 setIsLoading(false)
 
@@ -166,7 +163,6 @@ const ProfilePage = () => {
             const status = await changeProfileEmail(email)
 
             if (status) {
-                console.log(status)
                 handleError(status)
                 setIsLoading(false)
 

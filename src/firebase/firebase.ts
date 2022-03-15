@@ -56,7 +56,7 @@ export const auth = getAuth()
 
 const storage = getStorage()
 
-const firestore = getFirestore()
+export const firestore = getFirestore()
 
 // Sign up with email and password
 export const signUpUserWithEmailandPassword = async (
@@ -80,7 +80,6 @@ export const signUpUserWithEmailandPassword = async (
             timestamp: serverTimestamp(),
         }
     } catch (error: any) {
-        console.log(error.code)
         return error.code
     }
 }
@@ -94,7 +93,6 @@ export const signInUserWithEmailandPassword = async (
 
         return true
     } catch (error: any) {
-        console.log(error.code)
         return error.code
     }
 }
@@ -110,7 +108,6 @@ export const setDocOnFirestore = async (
             await setDoc(doc(firestore, collectionName, pathSegment), dataToSet)
         else await addDoc(collection(firestore, collectionName), dataToSet)
     } catch (error: any) {
-        console.log(error.code)
         return error.code
     }
 }
@@ -121,7 +118,6 @@ export const changeProfileName = async (newName: string) => {
         // Change name in auth
         await updateProfile(auth.currentUser!, { displayName: newName })
     } catch (error: any) {
-        console.log(error.code)
         return error.code
     }
 
@@ -132,7 +128,6 @@ export const changeProfileName = async (newName: string) => {
             lastUpdated: serverTimestamp(),
         })
     } catch (error: any) {
-        console.log(error.code)
         return error.code
     }
 }
@@ -142,7 +137,6 @@ export const changeProfileEmail = async (newEmail: string) => {
         // Change email in auth
         await updateEmail(auth.currentUser!, newEmail)
     } catch (error: any) {
-        console.log(error.code)
         return error.code
     }
 
@@ -153,7 +147,6 @@ export const changeProfileEmail = async (newEmail: string) => {
             lastUpdated: serverTimestamp(),
         })
     } catch (error: any) {
-        console.log(error.code)
         return error.code
     }
 }
@@ -162,7 +155,6 @@ export const recoverPassword = async (email: string) => {
     try {
         await sendPasswordResetEmail(auth, email)
     } catch (error: any) {
-        console.log(error.code)
         return error.code
     }
 }
@@ -206,8 +198,6 @@ export const getListingsDocuments = async (
         const lastDocSnapshot =
             querySnapshot.docs[querySnapshot.docs.length - 1]
 
-        console.log(lastDocSnapshot)
-
         docsSnapshot.forEach((documentSnapshot: DocumentSnapshot) =>
             listings.push({
                 ...documentSnapshot.data(),
@@ -215,10 +205,8 @@ export const getListingsDocuments = async (
             })
         )
 
-        console.log(listings)
         return { listings, lastDocSnapshot }
     } catch (error: any) {
-        console.log(error.code)
         return error.code
     }
 }
@@ -249,10 +237,8 @@ export const getOffers = async () => {
             })
         )
 
-        console.log(listings)
         return listings
     } catch (error: any) {
-        console.log(error.code)
         return error.code
     }
 }
@@ -270,26 +256,20 @@ export const uploadImage = async (imageFile: any) =>
             snapshot => {
                 // Observe state change events such as progress, pause, and resume
                 // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-                const progress =
-                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-                console.log('Upload is ' + progress + '% done')
+
                 switch (snapshot.state) {
                     case 'paused':
-                        console.log('Upload is paused')
                         break
                     case 'running':
-                        console.log('Upload is running')
                         break
                 }
             },
 
             (error: any) => {
-                console.log(error.code)
                 reject(error.code)
             },
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
-                    console.log('File available at', downloadURL)
                     resolve(downloadURL)
                 })
             }
@@ -311,7 +291,6 @@ export const getDocument = async (
             return null
         }
     } catch (error: any) {
-        console.log(error.code)
         return error.code
     }
 }
@@ -337,10 +316,8 @@ export const getListingsForExploreSlider = async () => {
             })
         )
 
-        console.log(listings)
         return listings
     } catch (error: any) {
-        console.log(error.code)
         return error.code
     }
 }
@@ -390,10 +367,8 @@ export const getUsersListings = async (
             })
         )
 
-        console.log(listings)
         return { listings, lastDocSnapshot }
     } catch (error: any) {
-        console.log(error.code)
         return error.code
     }
 }
@@ -402,7 +377,6 @@ export const deleteDocument = async (lisitingID: string) => {
     try {
         await deleteDoc(doc(firestore, '/listings', lisitingID))
     } catch (error: any) {
-        console.log(error.code)
         return error.code
     }
 }
@@ -417,7 +391,6 @@ export const updateListing = async (
             ...newData,
         })
     } catch (error: any) {
-        console.log(error.code)
         return error.code
     }
 }

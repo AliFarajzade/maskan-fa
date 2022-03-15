@@ -81,7 +81,6 @@ const EditListingPage = () => {
                 return
             }
 
-            console.log(response)
             setFormData({ ...response })
             setIsLoading(false)
         })()
@@ -96,7 +95,6 @@ const EditListingPage = () => {
                     navigate('/login')
                     setUserCredentials(null)
                 }
-                console.log(userAuth)
             }
         )
 
@@ -128,7 +126,6 @@ const EditListingPage = () => {
 
     const onSubmit = async (e: any) => {
         e.preventDefault()
-        console.log(formData)
 
         setIsLoading(true)
 
