@@ -24,8 +24,11 @@ import {
     orderBy,
     limit,
     DocumentData,
-    // startAfter,
     DocumentSnapshot,
+    deleteDoc,
+    startAfter,
+    QuerySnapshot,
+    Query,
 } from 'firebase/firestore'
 import { TListing } from '../types/lisiting.types'
 
@@ -165,24 +168,45 @@ export const recoverPassword = async (email: string) => {
 }
 
 // Getting documents from collection
-export const getListingsDocuments = async (value: string) => {
+export const getListingsDocuments = async (
+    value: string,
+    lastSnapshot: QuerySnapshot<DocumentData> | null = null
+) => {
     try {
         const collectionRef = collection(firestore, 'listings')
 
-        const q = query(
-            collectionRef,
-            where('type', '==', value),
-            orderBy('timestamp', 'desc'),
-            limit(10)
-        )
+        let q: Query<DocumentData>
+
+        if (lastSnapshot) {
+            q = query(
+                collectionRef,
+                where('type', '==', value),
+                orderBy('timestamp', 'desc'),
+                limit(2),
+                startAfter(lastSnapshot)
+            )
+        } else {
+            q = query(
+                collectionRef,
+                where('type', '==', value),
+                orderBy('timestamp', 'desc'),
+                limit(2)
+            )
+        }
 
         const querySnapshot = await getDocs(q)
 
-        if (querySnapshot.empty) return null
+        if (querySnapshot.empty)
+            return { listings: null, lastDocSnapshot: null }
 
         const listings: TListing[] | DocumentData | undefined = []
 
         const { docs: docsSnapshot } = querySnapshot
+
+        const lastDocSnapshot =
+            querySnapshot.docs[querySnapshot.docs.length - 1]
+
+        console.log(lastDocSnapshot)
 
         docsSnapshot.forEach((documentSnapshot: DocumentSnapshot) =>
             listings.push({
@@ -192,7 +216,7 @@ export const getListingsDocuments = async (value: string) => {
         )
 
         console.log(listings)
-        return listings
+        return { listings, lastDocSnapshot }
     } catch (error: any) {
         console.log(error.code)
         return error.code
@@ -315,6 +339,68 @@ export const getListingsForExploreSlider = async () => {
 
         console.log(listings)
         return listings
+    } catch (error: any) {
+        console.log(error.code)
+        return error.code
+    }
+}
+
+export const getUsersListings = async (
+    uid: string,
+    lastSnapshot: QuerySnapshot<DocumentData> | null = null
+) => {
+    try {
+        const collectionRef = collection(firestore, 'listings')
+
+        let q: Query<DocumentData>
+
+        if (lastSnapshot) {
+            q = query(
+                collectionRef,
+                where('creatorID', '==', uid),
+                orderBy('timestamp', 'desc'),
+                limit(2),
+                startAfter(lastSnapshot)
+            )
+        } else {
+            q = query(
+                collectionRef,
+                where('creatorID', '==', uid),
+                orderBy('timestamp', 'desc'),
+                limit(2)
+            )
+        }
+
+        const querySnapshot = await getDocs(q)
+
+        const lastDocSnapshot =
+            querySnapshot.docs[querySnapshot.docs.length - 1]
+
+        if (querySnapshot.empty)
+            return { listings: null, lastDocSnapshot: null }
+
+        const listings: TListing[] | DocumentData | undefined = []
+
+        const { docs: docsSnapshot } = querySnapshot
+
+        docsSnapshot.forEach((documentSnapshot: DocumentSnapshot) =>
+            listings.push({
+                ...documentSnapshot.data(),
+                id: documentSnapshot.id,
+            })
+        )
+
+        console.log(listings)
+        return { listings, lastDocSnapshot }
+    } catch (error: any) {
+        console.log(error.code)
+        return error.code
+    }
+}
+
+export const deleteDocument = async (lisitingID: string) => {
+    try {
+        await deleteDoc(doc(firestore, '/listings', lisitingID))
     } catch (error: any) {
         console.log(error.code)
         return error.code

@@ -31,7 +31,7 @@ const ExplorePage = () => {
 
     return (
         <>
-            <div className="explore">
+            <div className="explore pb-3">
                 <header>
                     <p className="pageHeader">آگهی ها</p>
                 </header>
@@ -44,7 +44,10 @@ const ExplorePage = () => {
                         >
                             {data.map(listingObj => (
                                 <SwiperSlide key={uuid()}>
-                                    <div
+                                    <a
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        href={`/category/${listingObj.type}/${listingObj.id}`}
                                         style={{
                                             background: `url(${listingObj.imageUrls[0]}) center no-repeat`,
                                             backgroundSize: 'cover',
@@ -55,17 +58,21 @@ const ExplorePage = () => {
                                             {listingObj.name}
                                         </p>
                                         <p className="swiperSlidePrice">
-                                            {numberDivider(
-                                                listingObj.discountedPrice
-                                            ) ??
-                                                numberDivider(
-                                                    listingObj.regularPrice
-                                                )}{' '}
-                                            {listingObj.type === 'sale' &&
-                                                'تومان /'}
-                                            {' ماهانه'}
+                                            {listingObj.discountedPrice
+                                                ? numberDivider(
+                                                      listingObj.discountedPrice
+                                                  )
+                                                : numberDivider(
+                                                      listingObj.regularPrice
+                                                  )}{' '}
+                                            {
+                                                // prettier-ignore
+                                                listingObj.type === 'rent'
+                                                ? 'تومان / ماهانه'
+                                                : 'تومان'
+                                            }
                                         </p>
-                                    </div>
+                                    </a>
                                 </SwiperSlide>
                             ))}
                         </Swiper>

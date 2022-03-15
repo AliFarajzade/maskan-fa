@@ -11,6 +11,7 @@ import CategoryPage from '../pages/category.page'
 import CreateListingPage from '../pages/create-listing.page'
 import Listing from '../pages/lisitng.page'
 import ContactPage from '../pages/contact.page'
+import EditListingPage from '../pages/edit-listing.page'
 
 const RoutesManager = () => {
     return (
@@ -24,6 +25,10 @@ const RoutesManager = () => {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/create-listing" element={<CreateListingPage />} />
             <Route path="/contact/:landlordID" element={<ContactPage />} />
+            <Route
+                path="/edit-listing/:listingID"
+                element={<EditListingPage />}
+            />
             <Route
                 path="/category/:categoryName/:houseID"
                 element={<Listing />}

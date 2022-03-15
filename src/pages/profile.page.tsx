@@ -2,6 +2,11 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { User } from 'firebase/auth'
+import { getUsersListings } from '../firebase/firebase'
+import ListingItem from '../components/listing-item.component'
+import { deleteDocument } from '../firebase/firebase'
+
+import { TListing } from '../types/lisiting.types'
 
 import rightArrow from '../assets/svg/keyboardArrowRightIcon.svg'
 import homeIcon from '../assets/svg/homeIcon.svg'
@@ -15,6 +20,7 @@ import {
 } from '../firebase/firebase'
 
 import Loader from '../components/loader.component'
+import { DocumentData, QuerySnapshot } from 'firebase/firestore'
 
 type TInputs = {
     name: string
@@ -23,9 +29,14 @@ type TInputs = {
 
 const ProfilePage = () => {
     const navigate = useNavigate()
+
+    const [usersListings, setUsersListings] = useState<null | TListing[]>(null)
     const [userCredentials, setUserCredentials] = useState<User | null>(null)
     const [changeUserDetailsStatus, setChangeUserDetailsStatus] =
         useState<boolean>(false)
+
+    const [lastListingSnapshot, setLastListingSnapshot] =
+        useState<null | QuerySnapshot<DocumentData>>(null)
 
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -53,6 +64,46 @@ const ProfilePage = () => {
         return () => unSubscribeGoogleAuthObserver()
     }, [navigate])
 
+    useEffect(() => {
+        userCredentials &&
+            (async () => {
+                setIsLoading(true)
+                const { listings: response, lastDocSnapshot } =
+                    await getUsersListings(userCredentials!.uid)
+
+                if (!response || typeof response === 'string') {
+                    setIsLoading(false)
+                    return
+                }
+
+                setLastListingSnapshot(lastDocSnapshot)
+                setUsersListings(response)
+                setIsLoading(false)
+            })()
+    }, [userCredentials])
+
+    const fetchMoreListings = async () => {
+        if (!lastListingSnapshot) {
+            toast.success('آگهی ها به پایان رسید.')
+            return
+        }
+        setIsLoading(true)
+        const { listings: response, lastDocSnapshot } = await getUsersListings(
+            userCredentials!.uid,
+            lastListingSnapshot
+        )
+
+        if (!response || typeof response === 'string') {
+            setIsLoading(false)
+            return
+        }
+
+        if (!lastDocSnapshot) setLastListingSnapshot(null)
+        else setLastListingSnapshot(lastDocSnapshot)
+        setUsersListings(prevState => [...prevState!, ...response])
+        setIsLoading(false)
+    }
+
     const signOut = () => {
         auth.signOut()
     }
@@ -72,6 +123,17 @@ const ProfilePage = () => {
                 )
                 break
         }
+    }
+
+    const onDelete = async (listingID: string) => {
+        if (window.confirm('آیا می خواهید این آکهی را پاک کنید؟')) {
+            const response = await deleteDocument(listingID)
+            response && toast.error('حذف آکهی با خطا رو برو شد.')
+        }
+    }
+
+    const onEdit = async (listingID: string) => {
+        console.log('Edit')
     }
 
     const onSubmit: SubmitHandler<TInputs> = async data => {
@@ -208,7 +270,27 @@ const ProfilePage = () => {
                                 alt="arrow right"
                             />
                         </Link>
+                        {usersListings && (
+                            <>
+                                <p className="listingText">آگهی های شما</p>
+                                <ul className="listingsList">
+                                    {usersListings.map(listing => (
+                                        <ListingItem
+                                            key={listing.id}
+                                            data={listing}
+                                            onDelete={onDelete}
+                                            onEdit={onEdit}
+                                        />
+                                    ))}
+                                </ul>
+                            </>
+                        )}
                     </main>
+                    {lastListingSnapshot && (
+                        <p className="loadMore" onClick={fetchMoreListings}>
+                            آگهی بیشتر
+                        </p>
+                    )}
                 </div>
             )}
 

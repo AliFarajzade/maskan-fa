@@ -140,6 +140,7 @@ const CreateListingPage = () => {
         if (status) toast.error('خطایی رخ داده است. دوباره تلاش کنید.')
 
         setIsLoading(false)
+        toast.success('آگهی با موفقیت ثبت شد.')
     }
 
     return (
@@ -392,7 +393,7 @@ const CreateListingPage = () => {
                             id="images"
                             onChange={onMutate}
                             max="6"
-                            accept="image/jpg, image/png, image/jpeg"
+                            accept="image/jpg, image/png, image/jpeg, image/webp"
                             multiple
                             required
                         />

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-// import { ReactComponent as DeleteIcon } from '../assets/svg/deleteIcon.svg'
-// import { ReactComponent as EditIcon } from '../assets/svg/editIcon.svg'
+import { ReactComponent as DeleteIcon } from '../assets/svg/deleteIcon.svg'
+import { ReactComponent as EditIcon } from '../assets/svg/editIcon.svg'
 import bedIcon from '../assets/svg/bedIcon.svg'
 import bathtubIcon from '../assets/svg/bathtubIcon.svg'
 
@@ -9,6 +9,8 @@ import { numberDivider } from '../helpers/divider.helper'
 
 type IProps = {
     data: TListing
+    onDelete?: (listingID: string) => void
+    onEdit?: (listingID: string) => void
 }
 
 const ListingItem: React.FC<IProps> = ({
@@ -24,6 +26,8 @@ const ListingItem: React.FC<IProps> = ({
         type,
         imageUrls,
     },
+    onDelete,
+    onEdit,
 }) => {
     return (
         <li className="categoryListing">
@@ -61,13 +65,21 @@ const ListingItem: React.FC<IProps> = ({
                 </div>
             </Link>
 
-            {/* {onDelete && (
+            {onDelete && (
                 <DeleteIcon
                     className="removeIcon"
                     fill="rgb(231, 76,60)"
-                    onClick={() => onDelete(id, name)}
+                    onClick={() => onDelete(id!)}
                 />
-            )} */}
+            )}
+
+            {onEdit && (
+                <EditIcon
+                    className="editIcon"
+                    fill="#333"
+                    onClick={() => onEdit(id!)}
+                />
+            )}
         </li>
     )
 }
