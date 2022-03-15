@@ -134,6 +134,7 @@ const ProfilePage = () => {
 
     const onEdit = async (listingID: string) => {
         console.log('Edit')
+        navigate(`/edit-listing/${listingID}`)
     }
 
     const onSubmit: SubmitHandler<TInputs> = async data => {

@@ -406,3 +406,18 @@ export const deleteDocument = async (lisitingID: string) => {
         return error.code
     }
 }
+
+export const updateListing = async (
+    listingID: string,
+    newData: Record<string, any>
+) => {
+    try {
+        const listingRef = doc(firestore, 'listings', listingID)
+        await updateDoc(listingRef, {
+            ...newData,
+        })
+    } catch (error: any) {
+        console.log(error.code)
+        return error.code
+    }
+}
