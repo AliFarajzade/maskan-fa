@@ -174,7 +174,7 @@ export const getListingsDocuments = async (
                 collectionRef,
                 where('type', '==', value),
                 orderBy('timestamp', 'desc'),
-                limit(2),
+                limit(5),
                 startAfter(lastSnapshot)
             )
         } else {
@@ -182,7 +182,7 @@ export const getListingsDocuments = async (
                 collectionRef,
                 where('type', '==', value),
                 orderBy('timestamp', 'desc'),
-                limit(2)
+                limit(5)
             )
         }
 
@@ -211,24 +211,42 @@ export const getListingsDocuments = async (
     }
 }
 
-export const getOffers = async () => {
+export const getOffers = async (
+    lastSnapshot: QuerySnapshot<DocumentData> | null = null
+) => {
     try {
         const collectionRef = collection(firestore, 'listings')
 
-        const q = query(
-            collectionRef,
-            where('offer', '==', true),
-            orderBy('timestamp', 'desc'),
-            limit(10)
-        )
+        let q: Query<DocumentData>
+
+        if (lastSnapshot) {
+            q = query(
+                collectionRef,
+                where('offer', '==', true),
+                orderBy('timestamp', 'desc'),
+                limit(1),
+                startAfter(lastSnapshot)
+            )
+        } else {
+            q = query(
+                collectionRef,
+                where('offer', '==', true),
+                orderBy('timestamp', 'desc'),
+                limit(1)
+            )
+        }
 
         const querySnapshot = await getDocs(q)
 
-        if (querySnapshot.empty) return null
+        if (querySnapshot.empty)
+            return { listings: null, lastDocSnapshot: null }
 
         const listings: TListing[] | DocumentData | undefined = []
 
         const { docs: docsSnapshot } = querySnapshot
+
+        const lastDocSnapshot =
+            querySnapshot.docs[querySnapshot.docs.length - 1]
 
         docsSnapshot.forEach((documentSnapshot: DocumentSnapshot) =>
             listings.push({
@@ -237,7 +255,7 @@ export const getOffers = async () => {
             })
         )
 
-        return listings
+        return { listings, lastDocSnapshot }
     } catch (error: any) {
         return error.code
     }
@@ -336,7 +354,7 @@ export const getUsersListings = async (
                 collectionRef,
                 where('creatorID', '==', uid),
                 orderBy('timestamp', 'desc'),
-                limit(2),
+                limit(5),
                 startAfter(lastSnapshot)
             )
         } else {
@@ -344,7 +362,7 @@ export const getUsersListings = async (
                 collectionRef,
                 where('creatorID', '==', uid),
                 orderBy('timestamp', 'desc'),
-                limit(2)
+                limit(5)
             )
         }
 

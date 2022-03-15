@@ -5,16 +5,19 @@ import Loader from '../components/loader.component'
 
 import { getOffers } from '../firebase/firebase'
 import { TListing } from '../types/lisiting.types'
+import { DocumentData, QuerySnapshot } from 'firebase/firestore'
 
 const OffersPage = () => {
     const [listings, setListings] = useState<TListing[] | [] | null>()
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [lastListingSnapshot, setLastListingSnapshot] =
+        useState<null | QuerySnapshot<DocumentData>>(null)
 
     useEffect(() => {
         ;(async () => {
             setIsLoading(true)
-            const requestStatus = await getOffers()
-
+            const { listings: requestStatus, lastDocSnapshot } =
+                await getOffers()
 
             switch (requestStatus) {
                 case null:
@@ -31,8 +34,33 @@ const OffersPage = () => {
                     break
             }
             setIsLoading(false)
+            setLastListingSnapshot(lastDocSnapshot)
         })()
     }, [])
+
+    const fetchMoreListings = async () => {
+        setIsLoading(true)
+        const { listings: requestStatus, lastDocSnapshot } = await getOffers(
+            lastListingSnapshot
+        )
+
+        if (!lastListingSnapshot) {
+            toast.success('آگهی ها به پایان رسید.')
+            setLastListingSnapshot(null)
+            setIsLoading(false)
+            return
+        }
+
+        if (!requestStatus || typeof requestStatus === 'string') {
+            setIsLoading(false)
+            return
+        }
+
+        if (!lastDocSnapshot) setLastListingSnapshot(null)
+        else setLastListingSnapshot(lastDocSnapshot)
+        setListings(prevState => [...prevState!, ...requestStatus])
+        setIsLoading(false)
+    }
 
     return (
         <>
@@ -53,6 +81,11 @@ const OffersPage = () => {
                                 ))}
                             </ul>
                         </main>
+                        {lastListingSnapshot && (
+                            <p className="loadMore" onClick={fetchMoreListings}>
+                                آگهی بیشتر
+                            </p>
+                        )}
                     </div>
                 </>
             )}
